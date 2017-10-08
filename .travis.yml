@@ -1,12 +1,25 @@
 language: php
 
+dependencies:
+  post:
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+
 php:
   - 5.6
   - 7.0
   - 7.1
+pre:
+  - ./cc-test-reporter before-build
 
 before_script:
   - travis_retry composer install --prefer-dist --dev
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 
 script:
-  - vendor/bin/phpunit --coverage-clover clover
+  - vendor/bin/phpunit --coverage-clover clover.xml
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT -t clover
